@@ -1,4 +1,4 @@
-﻿#NoEnv
+#NoEnv
 #MaxThreadsPerHotkey 2
 SetBatchLines, -1
 SetKeyDelay, -1
@@ -7,27 +7,55 @@ SetControlDelay, -1
 SendMode, Input
 CoordMode, Pixel, Screen
 
-; -------- RGB COLORS PER LANE --------
-aRed  := RGB(255,0,0)
-aBlue := RGB(255,0,255)
+; =========================================================
+; =================== CONFIG SECTION =======================
+; =========================================================
 
-sRed  := RGB(255,0,0)
-sBlue := RGB(255,0,255)
+; ---- KEYS (what gets pressed for each lane) ----
+left     := "a"   ; left lane key
+midleft  := "s"   ; mid-left lane key
+midright := "d"   ; mid-right lane key
+right    := "f"   ; right lane key
 
-dRed  := RGB(255,0,0)
-dBlue := RGB(255,0,255)
+; ---- COLORS (RGB format) ----
+; Block = tap note color
+; Line  = hold note color
+Block1 := RGB(255,0,0)
+Line1  := RGB(255,0,255)
 
-fRed  := RGB(255,0,0)
-fBlue := RGB(255,0,255)
+Block2 := RGB(255,0,0)
+Line2  := RGB(255,0,255)
 
-toggle := false
-blueReleaseDelay := 25
+Block3 := RGB(255,0,0)
+Line3  := RGB(255,0,255)
+
+Block4 := RGB(255,0,0)
+Line4  := RGB(255,0,255)
+
+; ---- SCREEN POSITIONS ----
+; X positions for each lane (left → right)
+x1 := 471
+x2 := 584
+x3 := 695
+x4 := 809
+
+; Y position where notes are detected
 checkHeight := 636
 
-aHold := false, aBlueGone := 0
-sHold := false, sBlueGone := 0
-dHold := false, dBlueGone := 0
-fHold := false, fBlueGone := 0
+; ---- TIMING ----
+; Delay (ms) after line disappears before releasing key
+lineReleaseDelay := 25
+
+; =========================================================
+; ================= END CONFIG =============================
+; =========================================================
+
+toggle := false
+
+leftHold := false, leftLineGone := 0
+midleftHold := false, midleftLineGone := 0
+midrightHold := false, midrightLineGone := 0
+rightHold := false, rightLineGone := 0
 
 Gui, +AlwaysOnTop -SysMenu
 Gui, Add, Text, vStatusText w50 Center, Off
@@ -41,87 +69,87 @@ while (toggle)
 {
     now := A_TickCount
 
-    ; -------- A lane --------
-    PixelGetColor, cA, 471, %checkHeight%, RGB Alt
-    if (cA = aRed) {
-        if (aHold)
-            SendInput {a up}
-        SendInput {a down}
-        aHold := true
-        aBlueGone := 0
-    } else if (cA = aBlue) {
-        aHold := true
-        aBlueGone := 0
-    } else if (aHold) {
-        if (!aBlueGone)
-            aBlueGone := now
-        else if (now - aBlueGone >= blueReleaseDelay) {
-            SendInput {a up}
-            aHold := false
-            aBlueGone := 0
+    ; -------- LEFT lane --------
+    PixelGetColor, c1, %x1%, %checkHeight%, RGB Alt
+    if (c1 = Block1) {
+        if (leftHold)
+            SendInput {%left% up}
+        SendInput {%left% down}
+        leftHold := true
+        leftLineGone := 0
+    } else if (c1 = Line1) {
+        leftHold := true
+        leftLineGone := 0
+    } else if (leftHold) {
+        if (!leftLineGone)
+            leftLineGone := now
+        else if (now - leftLineGone >= lineReleaseDelay) {
+            SendInput {%left% up}
+            leftHold := false
+            leftLineGone := 0
         }
     }
 
-    ; -------- S lane --------
-    PixelGetColor, cS, 584, %checkHeight%, RGB Alt
-    if (cS = sRed) {
-        if (sHold)
-            SendInput {s up}
-        SendInput {s down}
-        sHold := true
-        sBlueGone := 0
-    } else if (cS = sBlue) {
-        sHold := true
-        sBlueGone := 0
-    } else if (sHold) {
-        if (!sBlueGone)
-            sBlueGone := now
-        else if (now - sBlueGone >= blueReleaseDelay) {
-            SendInput {s up}
-            sHold := false
-            sBlueGone := 0
+    ; -------- MIDLEFT lane --------
+    PixelGetColor, c2, %x2%, %checkHeight%, RGB Alt
+    if (c2 = Block2) {
+        if (midleftHold)
+            SendInput {%midleft% up}
+        SendInput {%midleft% down}
+        midleftHold := true
+        midleftLineGone := 0
+    } else if (c2 = Line2) {
+        midleftHold := true
+        midleftLineGone := 0
+    } else if (midleftHold) {
+        if (!midleftLineGone)
+            midleftLineGone := now
+        else if (now - midleftLineGone >= lineReleaseDelay) {
+            SendInput {%midleft% up}
+            midleftHold := false
+            midleftLineGone := 0
         }
     }
 
-    ; -------- D lane --------
-    PixelGetColor, cD, 695, %checkHeight%, RGB Alt
-    if (cD = dRed) {
-        if (dHold)
-            SendInput {d up}
-        SendInput {d down}
-        dHold := true
-        dBlueGone := 0
-    } else if (cD = dBlue) {
-        dHold := true
-        dBlueGone := 0
-    } else if (dHold) {
-        if (!dBlueGone)
-            dBlueGone := now
-        else if (now - dBlueGone >= blueReleaseDelay) {
-            SendInput {d up}
-            dHold := false
-            dBlueGone := 0
+    ; -------- MIDRIGHT lane --------
+    PixelGetColor, c3, %x3%, %checkHeight%, RGB Alt
+    if (c3 = Block3) {
+        if (midrightHold)
+            SendInput {%midright% up}
+        SendInput {%midright% down}
+        midrightHold := true
+        midrightLineGone := 0
+    } else if (c3 = Line3) {
+        midrightHold := true
+        midrightLineGone := 0
+    } else if (midrightHold) {
+        if (!midrightLineGone)
+            midrightLineGone := now
+        else if (now - midrightLineGone >= lineReleaseDelay) {
+            SendInput {%midright% up}
+            midrightHold := false
+            midrightLineGone := 0
         }
     }
 
-    ; -------- F lane --------
-    PixelGetColor, cF, 809, %checkHeight%, RGB Alt
-    if (cF = fRed) {
-        if (fHold)
-            SendInput {f up}
-        SendInput {f down}
-        fHold := true
-        fBlueGone := 0
-    } else if (cF = fBlue) {
-        fHold := true
-        fBlueGone := 0
-    } else if (fHold) {
-        if (!fBlueGone)
-            fBlueGone := now
-        else if (now - fBlueGone >= blueReleaseDelay) {
-            SendInput {f up}
-            fHold := false
-            fBlueGone := 0
+    ; -------- RIGHT lane --------
+    PixelGetColor, c4, %x4%, %checkHeight%, RGB Alt
+    if (c4 = Block4) {
+        if (rightHold)
+            SendInput {%right% up}
+        SendInput {%right% down}
+        rightHold := true
+        rightLineGone := 0
+    } else if (c4 = Line4) {
+        rightHold := true
+        rightLineGone := 0
+    } else if (rightHold) {
+        if (!rightLineGone)
+            rightLineGone := now
+        else if (now - rightLineGone >= lineReleaseDelay) {
+            SendInput {%right% up}
+            rightHold := false
+            rightLineGone := 0
         }
     }
 }
